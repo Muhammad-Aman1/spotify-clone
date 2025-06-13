@@ -1,6 +1,7 @@
 console.log("Music Player By Aman");
 
 const BASE_URL = "/spotify-clone";
+
 let new_songs = [];
 let curr_song = new Audio();
 
@@ -40,6 +41,7 @@ async function Library(folder) {
   new_songs = await getSongs(folder);
   let library = document.querySelector(".Libr-Songs");
   library.innerHTML = "";
+
   for (let index = 0; index < new_songs.length; index++) {
     library.innerHTML += `
       <li class="Li-Songs">
@@ -93,7 +95,6 @@ async function getDescription(fName) {
 }
 
 async function main() {
-  await getPlaylists();
   let div = document.createElement("div");
   div.innerHTML = await getPlaylists();
   let as = div.getElementsByTagName("a");
@@ -106,9 +107,7 @@ async function main() {
         <div class="card">
           <img src="${BASE_URL}/songs/${element.getAttribute("title")}/cover.jpeg" alt="Cover-Photo" class="card1 cards-covers">
           <h3 class="card1 playlist-titles">${element.getAttribute("title")}</h3>
-          <div class="card1 card-play" id="playlist-select">
-            <img src="${BASE_URL}/img/playlist-play.svg" alt="Playlist">
-          </div>
+          <div class="card1 card-play" id="playlist-select"><img src="${BASE_URL}/img/playlist-play.svg" alt="Playlist"></div>
           <p class="card1">${response.description}</p>
         </div>`;
     }
@@ -195,6 +194,8 @@ cross.addEventListener("click", () => {
 
 let vol = document.querySelector("#volume");
 let volimg = document.querySelector("#volume-image");
+let volumeperc = document.querySelector("#vol-perc");
+
 vol.addEventListener("input", (e) => {
   if (e.target.value == 0) {
     volimg.src = `${BASE_URL}/img/mute.svg`;
@@ -202,7 +203,6 @@ vol.addEventListener("input", (e) => {
     volimg.src = `${BASE_URL}/img/volume.svg`;
   }
   curr_song.volume = e.target.value / 100;
-  console.log(e.target.value);
   volumeperc.innerHTML = Math.floor(curr_song.volume * 100) + "%";
   volumeperc.style.opacity = "1";
   setTimeout(() => {
@@ -211,8 +211,7 @@ vol.addEventListener("input", (e) => {
 });
 
 volimg.addEventListener("click", () => {
-  let src = volimg.src;
-  if (src.endsWith("/img/volume.svg")) {
+  if (volimg.src.endsWith("volume.svg")) {
     volimg.src = `${BASE_URL}/img/mute.svg`;
     vol.value = "0";
     curr_song.volume = 0;
@@ -247,7 +246,5 @@ window.addEventListener("resize", () => {
 });
 
 main();
-
-let volumeperc = document.querySelector("#vol-perc");
 volumeperc.innerHTML = curr_song.volume * 100 + "%";
 vol.value = curr_song.volume * 100;
