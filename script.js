@@ -16,7 +16,7 @@ function formatTime(seconds){
 }
 
 async function getSongs(folder) {
-  let a = await fetch(`/songs/${folder}/`);
+  let a = await fetch(`songs/${folder}/`);
   let response = await a.text();
   let div = document.createElement("div");
   div.innerHTML = response;
@@ -36,22 +36,18 @@ async function Library(folder) {
   let library = document.querySelector(".Libr-Songs");
   library.innerHTML="";
   for (let index = 0; index < new_songs.length; index++) {
-    library.innerHTML =
-      library.innerHTML +
+    library.innerHTML +=
       `<li class="Li-Songs">
-                          <img src="img/music.svg" alt="Music-IMG" class="svg-imgs">
-                          <p>${decodeURIComponent(new_songs[index].replace(".mp3", " "))}</p>
-                          <a href=/songs/${folder}/${
-                            new_songs[index]
-                          } class="Play-Li-Song">play now</a>
-                          <img src="img/play.svg" alt="Music-IMG" class="svg-imgs">
-                        </li>`;
+          <img src="img/music.svg" alt="Music-IMG" class="svg-imgs">
+          <p>${decodeURIComponent(new_songs[index].replace(".mp3", " "))}</p>
+          <a href="songs/${folder}/${new_songs[index]}" class="Play-Li-Song">play now</a>
+          <img src="img/play.svg" alt="Music-IMG" class="svg-imgs">
+        </li>`;
   }
-  curr_song.src=`/songs/${folder}/${
-    new_songs[0]}`;
-    curr_song.play();
-    document.querySelector(".play").src = "img/pause.svg";
-    document.querySelector("#Name-song").innerHTML=decodeURI(new_songs[0]);
+  curr_song.src=`songs/${folder}/${new_songs[0]}`;
+  curr_song.play();
+  document.querySelector(".play").src = "img/pause.svg";
+  document.querySelector("#Name-song").innerHTML=decodeURI(new_songs[0]);
 
   addEventListener("timeupdate", () => {
     console.log(curr_song.currentTime);
@@ -70,26 +66,30 @@ async function Library(folder) {
     anchor.querySelector("a").addEventListener("click", PlaySong);
   });
 
-   curr_song.addEventListener("timeupdate",()=>{
-   document.querySelector("#Duration-song").innerHTML=`${formatTime(curr_song.currentTime)}/${formatTime(curr_song.duration)}`;
-   document.querySelector(".ball").style.left=`${(curr_song.currentTime/curr_song.duration)*100}%`;
-})
+  curr_song.addEventListener("timeupdate",()=>{
+    document.querySelector("#Duration-song").innerHTML=`${formatTime(curr_song.currentTime)}/${formatTime(curr_song.duration)}`;
+    document.querySelector(".ball").style.left=`${(curr_song.currentTime/curr_song.duration)*100}%`;
+  });
 }
+
 document.querySelector(".bar").addEventListener("click",e=>{
   let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
   document.querySelector(".ball").style.left=percent+"%";
   curr_song.currentTime=(curr_song.duration*percent)/100;
 })
+
 async function getPlaylists() {
-  let a=await fetch("/songs/");
+  let a=await fetch("songs/");
   let response=await a.text();
   return response;
 }
+
 async function getDescription(fName) {
-  let  desc=await fetch(`/songs/${encodeURIComponent(fName)}/info.json`);
+  let  desc=await fetch(`songs/${encodeURIComponent(fName)}/info.json`);
   let response=await desc.json();
   return response;
 }
+
 async function main(){
  await getPlaylists();
  let div=document.createElement("div");
@@ -100,34 +100,34 @@ async function main(){
   const element = as[index];
     if(element.getAttribute("href")!="/"&&element.getAttribute("title")){
       let response=await getDescription(`${element.getAttribute("title")}`);
-      document.querySelector(".Music-Cards").innerHTML=document.querySelector(".Music-Cards").innerHTML+`<div class="card">
-                        <img src="/songs/${element.getAttribute("title")}/cover.jpeg" alt="Cover-Photo" class="card1 cards-covers">
+      document.querySelector(".Music-Cards").innerHTML += `<div class="card">
+                        <img src="songs/${element.getAttribute("title")}/cover.jpeg" alt="Cover-Photo" class="card1 cards-covers">
                         <h3 class="card1 playlist-titles">${element.getAttribute("title")}</h3>
                         <div class="card1 card-play" id="playlist-select"><img src="img/playlist-play.svg" alt="Playlist"></div>
                         <p class="card1">${response.description}</p>
                     </div>`;
     }
  }
+
  function playlistsdisplay(e){
   let title=encodeURIComponent(e.innerHTML);
-    Library(title);
-    document.querySelector(".left").style.display="block";
+  Library(title);
+  document.querySelector(".left").style.display="block";
  }
+
  document.querySelectorAll(".card").forEach((card)=>{
   card.querySelector(".playlist-titles").addEventListener("click",(e)=>{
     e.stopPropagation();
     playlistsdisplay(e.target);
-  })
+  });
   card.querySelector(".cards-covers").addEventListener("click",(e)=>{
     e.stopPropagation();
-    console.log(card.querySelector(".playlist-titles").innerHTML)
     playlistsdisplay(card.querySelector(".playlist-titles"));
-  })
+  });
   card.querySelector(".card-play").addEventListener("click",(e)=>{
     e.stopPropagation();
-    console.log(card.querySelector(".playlist-titles").innerHTML)
     playlistsdisplay(card.querySelector(".playlist-titles"));
-  })
+  });
 });
 }
 
@@ -147,26 +147,25 @@ prev.addEventListener("click",()=>{
 let index=new_songs.indexOf(getName(curr_song.src));
 curr_song.pause();
 if(index>0){
-  curr_song.src=`/songs/${getfName(curr_song.src)}/${new_songs[index-1]}`;
+  curr_song.src=`songs/${getfName(curr_song.src)}/${new_songs[index-1]}`;
 }
 else{
-  curr_song.src=`/songs/${getfName(curr_song.src)}/${new_songs[new_songs.length-1]}`;
+  curr_song.src=`songs/${getfName(curr_song.src)}/${new_songs[new_songs.length-1]}`;
 }
 curr_song.play();
 document.querySelector("#Name-song").innerHTML=decodeURIComponent(getName(curr_song.src));
 play.src = "img/pause.svg";
 });
 
-
 let next = document.querySelector(".next");
 next.addEventListener("click",()=>{
 let index=new_songs.indexOf(getName(curr_song.src));
 curr_song.pause();
 if(index<new_songs.length-1){
-  curr_song.src=`/songs/${getfName(curr_song.src)}/${new_songs[index+1]}`;
+  curr_song.src=`songs/${getfName(curr_song.src)}/${new_songs[index+1]}`;
 }
 else{
-  curr_song.src=`/songs/${getfName(curr_song.src)}/${new_songs[0]}`;
+  curr_song.src=`songs/${getfName(curr_song.src)}/${new_songs[0]}`;
 }
 curr_song.play();
 document.querySelector("#Name-song").innerHTML=decodeURIComponent(getName(curr_song.src));
@@ -195,10 +194,10 @@ let vol=document.querySelector("#volume");
 let volimg=document.querySelector("#volume-image");
 vol.addEventListener("input",(e)=>{
   if(e.target.value==0){
-    volimg.src="/img/mute.svg";
+    volimg.src="img/mute.svg";
   }
   else{
-    volimg.src="/img/volume.svg";
+    volimg.src="img/volume.svg";
   }
   curr_song.volume=e.target.value/100;
   console.log(e.target.value);
@@ -211,15 +210,14 @@ vol.addEventListener("input",(e)=>{
 
 volimg.addEventListener("click",()=>{
   let src=volimg.src;
-  console.log(src);
   if(src.endsWith("/img/volume.svg")){
-   src="/img/mute.svg";
+   src="img/mute.svg";
    vol.value="0";
    curr_song.volume="0";
    volumeperc.innerHTML="0%";
   }
   else{
-    src="/img/volume.svg";
+    src="img/volume.svg";
     vol.value="100";
     curr_song.volume="1";
     volumeperc.innerHTML="100%";
